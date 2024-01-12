@@ -1,4 +1,6 @@
-﻿namespace ProcGenTiles
+﻿using Console = Colorful.Console;
+
+namespace ProcGenTiles
 {
     public class Program
     {

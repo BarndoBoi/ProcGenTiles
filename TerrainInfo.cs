@@ -1,17 +1,18 @@
 using System.Drawing;
+using System.Dynamic;
 
 namespace ProcGenTiles{
 	public class TerrainInfo
 	{
-		Color GlyphColor;
-		Color BackgroundColor;
-		char DisplayCharacter;
+		public Color GlyphColor { get; private set; }
+		public char DisplayCharacter { get; private set; }
+		public string TerrainName { get; set; }
 		
-		public TerrainInfo(Color glyph, Color background, char symbol)
+		public TerrainInfo(Color glyph, char symbol, string name = "default")
 		{
 			GlyphColor = glyph;
-			BackgroundColor = background;
 			DisplayCharacter = symbol;
+			TerrainName = name;
 		}
 		
 	}

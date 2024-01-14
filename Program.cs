@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 using Console = Colorful.Console;
 
 namespace ProcGenTiles
@@ -14,6 +15,12 @@ namespace ProcGenTiles
 			float noiseScale = 0.5f;
 			float noiseFrequency = 0.25f;
 			int seed = 10;
+			Map map = new Map(Height, Width);
+			
+			Pathfinding path = new Pathfinding(map);
+			
+			
+			//Terrain definitions and such
 			Dictionary<Range, TerrainInfo> elevationCharacters = new Dictionary<Range, TerrainInfo>();
 			TerrainInfo deepWater = new TerrainInfo(Color.DarkBlue, '~', "Deep Water");
 			TerrainInfo shallowWater = new TerrainInfo(Color.LightBlue, '`', "Shallow Water");
@@ -22,6 +29,7 @@ namespace ProcGenTiles
 			TerrainInfo highlands = new TerrainInfo(Color.DarkGray, '-', "Highland");
 			TerrainInfo mountains = new TerrainInfo(Color.Gray, '^', "Mountain");
 			
+			//Add the definitions to the ranges
 			elevationCharacters.Add(new Range(-1f, -0.5f), deepWater); //If under 0.5 use this symbol
 			elevationCharacters.Add(new Range(-0.5f, 0),shallowWater);
 			elevationCharacters.Add(new Range(0, 0.3f), lowGround);
@@ -31,7 +39,7 @@ namespace ProcGenTiles
 
 
 			//Init map and prep noise for terrain layer
-			Map map = new Map(Height, Width);
+			
 			FastNoiseLite noise = new FastNoiseLite();
 			noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 			noise.SetFrequency(noiseFrequency);

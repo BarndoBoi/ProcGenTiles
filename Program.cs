@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
 using Console = Colorful.Console;
 
 namespace ProcGenTiles
@@ -10,8 +9,8 @@ namespace ProcGenTiles
 
 		public static void Main()
 		{
-			int Height = 20;
-			int Width = 50;
+			int Height = 10;
+			int Width = 25;
 			float noiseScale = 0.5f;
 			float noiseFrequency = 0.25f;
 			int seed = 10;
@@ -69,6 +68,35 @@ namespace ProcGenTiles
 				Console.WriteLine("");
 			}
 
+			Console.WriteLine("");
+			Console.WriteLine("----------");
+			Console.WriteLine("");
+			path.LandWaterFloodfill((0,0)); //Just floodfill from the first tile and mark everything 0 or 1
+			PrintLayerValues(map, "Land");
+			Console.WriteLine("");
+			Console.WriteLine("----------");
+			Console.WriteLine("");
+			path.MarkAllRegions();
+			PrintLayerValues(map, "Region");
+		}
+		
+		private static void PrintLayerValues(Map map, string layer)
+		{
+			for (int x = 0; x < map.Width; x++)
+			{
+				for (int y = 0; y < map.Height; y++)
+				{
+					Tile t = map.GetTile((x, y));
+					float value = t.ValuesHere[layer];
+					Color color;
+					if (value == 1)
+						color = Color.Green;
+					else
+						color = Color.Blue;
+					Console.Write(value, color);
+				}
+				Console.WriteLine("");
+			}
 		}
 
 	}

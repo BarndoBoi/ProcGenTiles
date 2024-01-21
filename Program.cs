@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using Colorful;
 using Console = Colorful.Console;
 
 namespace ProcGenTiles
@@ -6,6 +7,17 @@ namespace ProcGenTiles
 	public class Program
 	{
 
+		static ColorEnumerator colors = new ColorEnumerator(
+			new List<Color> {
+				Color.Red,
+				Color.Orange,
+				Color.Yellow,
+				Color.Green,
+				Color.Blue,
+				Color.White,
+				Color.Brown,
+				Color.Purple
+			}); //Holds nine colors for use in coloring regions or such
 
 		public static void Main()
 		{
@@ -14,11 +26,12 @@ namespace ProcGenTiles
 			float noiseScale = 0.5f;
 			float noiseFrequency = 0.25f;
 			int seed = 10;
+
 			Map map = new Map(Height, Width);
-			
+
 			Pathfinding path = new Pathfinding(map);
-			
-			
+
+
 			//Terrain definitions and such
 			Dictionary<Range, TerrainInfo> elevationCharacters = new Dictionary<Range, TerrainInfo>();
 			TerrainInfo deepWater = new TerrainInfo(Color.DarkBlue, '~', "Deep Water");
@@ -27,10 +40,10 @@ namespace ProcGenTiles
 			TerrainInfo mediumGround = new TerrainInfo(Color.Green, '_', "Medium Ground");
 			TerrainInfo highlands = new TerrainInfo(Color.DarkGray, '-', "Highland");
 			TerrainInfo mountains = new TerrainInfo(Color.Gray, '^', "Mountain");
-			
+
 			//Add the definitions to the ranges
 			elevationCharacters.Add(new Range(-1f, -0.5f), deepWater); //If under 0.5 use this symbol
-			elevationCharacters.Add(new Range(-0.5f, 0),shallowWater);
+			elevationCharacters.Add(new Range(-0.5f, 0), shallowWater);
 			elevationCharacters.Add(new Range(0, 0.3f), lowGround);
 			elevationCharacters.Add(new Range(0.3f, 0.6f), mediumGround);
 			elevationCharacters.Add(new Range(0.6f, 0.9f), highlands);
@@ -38,7 +51,7 @@ namespace ProcGenTiles
 
 
 			//Init map and prep noise for terrain layer
-			
+
 			FastNoiseLite noise = new FastNoiseLite();
 			noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
 			noise.SetFrequency(noiseFrequency);
@@ -52,8 +65,8 @@ namespace ProcGenTiles
 				for (int j = 0; j < Width; j++)
 				{
 					float value = noise.GetNoise(i * noiseScale, j * noiseScale);
-					map.Tiles[i,j].ValuesHere.Add(layerName, value);
-					TerrainInfo found = null;
+					map.Tiles[i, j].ValuesHere.Add(layerName, value);
+					TerrainInfo? found = null;
 					foreach (Range r in elevationCharacters.Keys)
 					{
 						if (r.InRange(value))
@@ -71,7 +84,7 @@ namespace ProcGenTiles
 			Console.WriteLine("");
 			Console.WriteLine("----------");
 			Console.WriteLine("");
-			path.LandWaterFloodfill((0,0)); //Just floodfill from the first tile and mark everything 0 or 1
+			path.LandWaterFloodfill((0, 0)); //Just floodfill from the first tile and mark everything 0 or 1
 			PrintLayerValues(map, "Land");
 			Console.WriteLine("");
 			Console.WriteLine("----------");
@@ -79,7 +92,7 @@ namespace ProcGenTiles
 			path.MarkAllRegions();
 			PrintLayerValues(map, "Region");
 		}
-		
+
 		private static void PrintLayerValues(Map map, string layer)
 		{
 			for (int x = 0; x < map.Width; x++)
@@ -89,10 +102,18 @@ namespace ProcGenTiles
 					Tile t = map.GetTile((x, y));
 					float value = t.ValuesHere[layer];
 					Color color;
-					if (value == 1)
-						color = Color.Green;
+					if (layer == "Land")
+					{
+						if (value == 1)
+							color = Color.Green;
+						else
+							color = Color.Blue;
+					}
 					else
-						color = Color.Blue;
+					{
+						color = colors.Next((int)value);
+					}
+
 					Console.Write(value, color);
 				}
 				Console.WriteLine("");
